@@ -1,0 +1,14 @@
+{
+  "azureFunctions.deploySubpath": ".",
+  "azureFunctions.scmDoBuildDuringDeployment": true,
+  "azureFunctions.pythonVenv": ".venv",
+  "azureFunctions.projectLanguage": "Python",
+  "azureFunctions.projectRuntime": "~2",
+  "debug.internalConsoleOptions": "neverOpen",
+  "python.linting.pylintEnabled": false,
+  "python.linting.mypyEnabled": true,
+  "python.linting.enabled": true,
+  "python.linting.pycodestyleEnabled": false,
+  "python.linting.banditEnabled": false,
+  "python.linting.flake8Enabled": false
+}
