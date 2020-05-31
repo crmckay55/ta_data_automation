@@ -1,10 +1,8 @@
-import os, sys
+import  sys
 import logging
 import json
 from bs4 import BeautifulSoup
 import pandas as pd
-from azure.cosmosdb.table.tableservice import TableService
-from azure.cosmosdb.table.models import EntityProperty, EdmType
 
 
 def process_data(blob_contents, partition_key, row_prefix):
@@ -12,16 +10,14 @@ def process_data(blob_contents, partition_key, row_prefix):
     version = _get_version(partition_key)
     logging.info(f'Processing version {version} of IW38')
 
-
     func = getattr(sys.modules[__name__], "_" + version)
     logging.info(f'Found processor version for {version}')
 
     return func(blob_contents, partition_key, row_prefix)
   
 
-
 def _get_version(partition_key):
-     # template:
+    # template:
     # IW38_01-Carseland 2021-20200523
     # 0000000-11111111111111-22222222
     # split(-)  split(-)     split(-)

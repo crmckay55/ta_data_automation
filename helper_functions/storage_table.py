@@ -1,22 +1,24 @@
 import logging
-import os
-import pandas as pd
 from azure.cosmosdb.table.tableservice import TableService, TableBatch
 from azure.cosmosdb.table.models import EntityProperty, EdmType
+try:
+    from . import config
+except:
+    from helper_functions import config
 
 
 def update_storage_table(df, partition_key, row_prefix):
 
-    cs = os.getenv('AzureWebJobsStorage')
-    st = os.getenv('SnapshotDataTable')
-    table_service = TableService(connection_string=cs)
-    logging.info(f'Starting write to storage table {st}.')
+    az_config = config.DefaultConfig()
+
+    table_service = TableService(connection_string=az_config.STORAGE_CONNECTION)
+    logging.info(f'Starting write to storage table.')
    
     # check for duplicates.  if found, delete them.
-    _check_duplicates_(table_service, st, partition_key, row_prefix)
+    _check_duplicates_(table_service, az_config.OUTPUT_TABLE, partition_key, row_prefix)
 
     # <TODO> change return type so information can be logged if there's an error.
-    _update_table_(df, table_service)
+    _update_table_(df, table_service, az_config)
 
 
 def _check_duplicates_(table_service, st, partition_key, row_prefix):
@@ -64,14 +66,9 @@ def _check_duplicates_(table_service, st, partition_key, row_prefix):
     
         logging.info(f'Found no duplicates in {partition_key}')         
 
-def _update_table_(df, service):
+def _update_table_(df, service, az_config):
 
-    cs = os.getenv('AzureWebJobsStorage')
-    st = os.getenv('SnapshotDataTable')
-
-    logging.info(f'Starting write to storage table {st}.')
-
-    table_service = TableService(connection_string=cs)
+    logging.info(f'Starting write to storage table {az_config.OUTPUT_TABLE}.')
 
     batch_counter = 0
     batch = TableBatch()
@@ -85,11 +82,11 @@ def _update_table_(df, service):
 
         if batch_counter == 100:
             batch_counter = 0
-            table_service.commit_batch(st, batch)
+            service.commit_batch(az_config.OUTPUT_TABLE, batch)
             batch = None
             batch = TableBatch()
 
     if batch_counter > 0:
-        table_service.commit_batch(st, batch)
+        service.commit_batch(az_config.OUTPUT_TABLE, batch)
 
     logging.info('Finished write to storage table.')
