@@ -13,7 +13,8 @@ except:
     from helper_functions import process_file as pf
     from helper_functions import config
 
-# <TODO> make a config.py file for all environmental variables
+
+# TODO: create a debug flag
 
 def main(msg) -> None:
     az_config = config.DefaultConfig()
