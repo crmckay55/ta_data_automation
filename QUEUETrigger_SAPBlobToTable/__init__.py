@@ -5,6 +5,8 @@ from datetime import datetime
 import azure.functions as func
 
 from azure.cosmosdb.table.tableservice import TableService
+
+# first is import in Azure, second is Local import
 try:
     from ..helper_functions import config
     from ..helper_functions import process_file as pf
