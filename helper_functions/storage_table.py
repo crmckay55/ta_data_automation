@@ -1,6 +1,9 @@
 import logging
+import pandas as pd
 from azure.cosmosdb.table.tableservice import TableService, TableBatch
 from azure.cosmosdb.table.models import EntityProperty, EdmType
+from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
+
 try:
     from . import config
 except:
@@ -19,6 +22,19 @@ def update_storage_table(df, partition_key, row_prefix):
 
     # <TODO> change return type so information can be logged if there's an error.
     _update_table_(df, table_service, az_config)
+
+
+def update_storage_blob(df, filename):
+    az_config = config.DefaultConfig()
+
+    blob_services_client = BlobServiceClient.from_connection_string(az_config.STORAGE_CONNECTION)
+    blob_container_client = blob_services_client.get_container_client(az_config.BLOB_CONTAINER)
+    blob_client = blob_container_client.get_blob_client(filename)
+
+    output = df.to_csv(index=False, encoding="utf-8", sep='\t')
+
+    blob_client.upload_blob(output)
+
 
 
 def _check_duplicates_(table_service, st, partition_key, row_prefix):

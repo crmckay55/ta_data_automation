@@ -40,7 +40,8 @@ def process_blob(blob_name):
         contents = f.read()
     logging.info(f'Read local file with length {len(contents)}')
 
-    
+    # <TODO> delete temporary file!!
+
     # dynamically call function based on transaction name
     # version will be handled within the function 
     # <TODO> write an inheritable class for all functions to implement.
@@ -55,9 +56,11 @@ def process_blob(blob_name):
 
     parsed_df = transaction_processor.process_data(contents, partition_key, row_prefix)
     
-    storage_table.update_storage_table(parsed_df, partition_key, row_prefix)
+    # TODO: Remove this commented line after debug
+    # storage_table.update_storage_table(parsed_df, partition_key, row_prefix)
+    storage_table.update_storage_blob(parsed_df, 'test.csv')
 
-    _delete_blob(blob_name, blob_container_client)
+    # _delete_blob(blob_name, blob_container_client)
 
     return len(parsed_df)
 
@@ -65,6 +68,7 @@ def process_blob(blob_name):
 def _delete_blob(blob_name, blob_container_client):
     blob_container_client.delete_blob(blob_name)
     logging.info(f'Deleted blob {blob_name}')
+
 
 def _get_partition_key(blob_name):
 
